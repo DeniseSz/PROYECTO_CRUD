@@ -25,18 +25,16 @@ class Catalogo:
             password=password 
     )
         self.cursor = self.conn.cursor()
-
         # Intentamos seleccionar la base de datos
         try:
             self.cursor.execute(f"USE {database}")
         except mysql.connector.Error as err:
-            # Si la base de datos no existe, la creamos
+        # Si la base de datos no existe, la creamos
             if err.errno == mysql.connector.errorcode.ER_BAD_DB_ERROR:
                 self.cursor.execute(f"CREATE DATABASE {database}")
                 self.conn.database = database
             else:
                 raise err
-    
             # Una vez que la base de datos está establecida, creamos la tabla si no existe
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS socios (
             dni INT,
@@ -86,7 +84,7 @@ class Catalogo:
             return False
     
     # Si no existe, agregamos el nuevo socio a la tabla
-        sql = "INSERT INTO socios (dni, apellido, nombre, edad, plan) VALUES (%s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO socios (dni, apellido, nombre, edad, plan) VALUES (%s, %s, %s, %s, %s)"
         valores = (dni, apellido, nombre, edad, plan)
         self.cursor.execute(sql, valores)   
         self.conn.commit()
@@ -100,7 +98,7 @@ class Catalogo:
 
     def modificar_socio(self, dni, nuevo_apellido, nuevo_nombre, nueva_edad, nuevo_plan):
         sql = "UPDATE socios SET apellido = %s, nombre = %s, edad = %s, plan = %s WHERE dni = %s"
-        valores = (nuevo_apellido, nuevo_nombre, nueva_edad, nuevo_plan, dni)
+        valores = (nuevo_apellido, nuevo_nombre, int(nueva_edad), nuevo_plan, dni)
         self.cursor.execute(sql, valores)
         self.conn.commit()
         return self.cursor.rowcount > 0
